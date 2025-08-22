@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: rgb(217, 161, 161);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: #5d064e;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: 600;
+      font-size: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 24px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #9b0e71;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 24px;
+      width: 100%;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #e654a7;
+    }
+
+    .password-display {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border-left: 4px solid #ee58dc;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 24px;
+    }
+
+    .copy-btn {
+      background-color: #580849;
+      margin-top: 10px;
+      padding: 12px 15px;
+      font-size: 24px;
+    }
+
+    .copy-btn:hover {
+      background-color: #a64a6a;
+    }
+
+    /* 🔹 Responsive adjustments for smaller screens */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 26px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      input {
+        font-size: 16px;
+        padding: 8px;
+      }
+
+      button, .password-display, .copy-btn {
+        font-size: 16px;
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+    }
+    .password-display {
+  margin-top: 25px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 4px solid #ee58dc;
+  word-break: break-all;
+  font-family: monospace;
+  font-size: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.password-display strong {
+  font-size: 20px;
+  color: #333;
+}
+
+#password-output {
+  font-size: 25px;     /* bigger font */
+  font-weight: bold;
+  color: #9b0e71;      /* purple to stand out */
+  margin-left: 10px;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Password Generator</h1>
+    
+    <div class="form-group">
+      <label for="letters">How many letters would you like in your password?</label>
+      <input type="number" id="letters" min="1" value="5">
+    </div>
+    
+    <div class="form-group">
+      <label for="symbols">How many symbols would you like?</label>
+      <input type="number" id="symbols" min="1" value="3">
+    </div>
+    
+    <div class="form-group">
+      <label for="numbers">How many numbers would you like?</label>
+      <input type="number" id="numbers" min="1" value="3">
+    </div>
+    
+    
+    
+    <button id="generate-btn">Generate Password</button>
+    
+    <div class="password-display">
+      <strong>Your Password:</strong>
+      <div id="password-output"></div>
+      <button class="copy-btn" id="copy-btn">Copy Password</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Character arrays
+      const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      const numbers = '0123456789'.split('');
+      const symbols = ["!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", 
+                       ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"];
+
+      // Get DOM elements
+      const generateBtn = document.getElementById('generate-btn');
+      const copyBtn = document.getElementById('copy-btn');
+      const passwordOutput = document.getElementById('password-output');
+      const lettersInput = document.getElementById('letters');
+      const symbolsInput = document.getElementById('symbols');
+      const numbersInput = document.getElementById('numbers');
+
+      // Generate password function
+      function generatePassword() {
+        const nrLetters = parseInt(lettersInput.value) || 0;
+        const nrSymbols = parseInt(symbolsInput.value) || 0;
+        const nrNumbers = parseInt(numbersInput.value) || 0;
+
+        if (nrLetters + nrSymbols + nrNumbers < 6) {
+          passwordOutput.textContent = "Password should have at least 6 characters";
+          passwordOutput.style.color = "#e74c3c";
+          return;
+        }
+
+        let cleanedLetters = [];
+        for (let i = 0; i < nrLetters; i++) {
+          const randomIndex = Math.floor(Math.random() * letters.length);
+          cleanedLetters.push(letters[randomIndex]);
+        }
+
+        let cleanedNumbers = [];
+        for (let i = 0; i < nrNumbers; i++) {
+          const randomIndex = Math.floor(Math.random() * numbers.length);
+          cleanedNumbers.push(numbers[randomIndex]);
+        }
+
+        let cleanedSymbols = [];
+        for (let i = 0; i < nrSymbols; i++) {
+          const randomIndex = Math.floor(Math.random() * symbols.length);
+          cleanedSymbols.push(symbols[randomIndex]);
+        }
+
+        let combination = [...cleanedLetters, ...cleanedNumbers, ...cleanedSymbols];
+
+        // Shuffle using Fisher-Yates
+        for (let i = combination.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [combination[i], combination[j]] = [combination[j], combination[i]];
+        }
+
+        const password = combination.join('');
+        passwordOutput.textContent = password;
+        passwordOutput.style.color = "#2c3e50";
+      }
+
+      // Copy function
+      function copyToClipboard() {
+        const password = passwordOutput.textContent;
+        if (password === "Click generate to create a password" || password === "Password should have at least 6 characters") {
+          return;
+        }
+
+        navigator.clipboard.writeText(password).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+          }, 2000);
+        });
+      }
+
+      generateBtn.addEventListener('click', generatePassword);
+      copyBtn.addEventListener('click', copyToClipboard);
+      document.addEventListener('keypress', e => { if (e.key === 'Enter') generatePassword(); });
+    });
+  </script>
+</body>
+</html>
